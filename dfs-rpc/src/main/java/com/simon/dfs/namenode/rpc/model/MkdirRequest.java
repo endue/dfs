@@ -9,7 +9,7 @@ package com.simon.dfs.namenode.rpc.model;
 public  final class MkdirRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:com.simon.dfs.namenode.rpc.MkdirRequest)
-    MkdirRequestOrBuilder {
+        MkdirRequestOrBuilder {
   // Use MkdirRequest.newBuilder() to construct.
   private MkdirRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);

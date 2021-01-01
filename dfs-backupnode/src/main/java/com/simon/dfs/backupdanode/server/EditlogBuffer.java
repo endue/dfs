@@ -1,4 +1,4 @@
-package com.simon.dfs.namenode.directory;
+package com.simon.dfs.backupdanode.server;
 
 import com.simon.dfs.common.constants.NameNodeConstant;
 
@@ -15,17 +15,17 @@ import java.nio.channels.FileChannel;
  * @Date: 2021/1/1 8:01
  * @Version: 1.0
  */
-public class EditLogBuffer {
+public class EditlogBuffer {
 
     private ByteArrayOutputStream buffer;
     private Long flushMaxTxid = -1L;
     private Long fulshMinTxid = -1L;
 
-    public EditLogBuffer() {
+    public EditlogBuffer() {
         this.buffer = new ByteArrayOutputStream(NameNodeConstant.EDIT_LOG_BUFFER_LIMIT.intValue());
     }
 
-    public void write(EditLog editLog) throws IOException {
+    public void write(Editlog editLog) throws IOException {
         if(fulshMinTxid < 0){
             this.fulshMinTxid = editLog.txid;
         }

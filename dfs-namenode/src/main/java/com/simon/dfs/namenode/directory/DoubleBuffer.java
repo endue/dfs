@@ -1,9 +1,13 @@
 package com.simon.dfs.namenode.directory;
 
+import cn.hutool.json.JSONUtil;
 import com.simon.dfs.common.constants.NameNodeConstant;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * @Author:
@@ -16,17 +20,20 @@ public class DoubleBuffer {
     /**
      * 当前buffer
      */
-    private EditLogBuffer currentBuffer = new EditLogBuffer();
+    private EditlogBuffer currentBuffer = new EditlogBuffer();
     /**
      * 需要刷磁盘buffer
      */
-    private EditLogBuffer flushBuffer = new EditLogBuffer();
+    private EditlogBuffer flushBuffer = new EditlogBuffer();
+
+    // 已刷盘的txid组
+    private Map<Long,Long> flushedTxidMap = new HashMap<>();
 
     /**
      * 将edits log写到内存缓冲里去
      * @param log
      */
-    public void write(EditLog log) throws IOException {
+    public void write(Editlog log) throws IOException {
         currentBuffer.write(log);
     }
 
@@ -34,7 +41,9 @@ public class DoubleBuffer {
      * 交换两块缓冲区，为了同步内存数据到磁盘做准备
      */
     public void setReadyToFlush() {
-        EditLogBuffer tmp = currentBuffer;
+        flushedTxidMap.put(currentBuffer.getFulshMinTxid(),currentBuffer.getFlushMaxTxid());
+
+        EditlogBuffer tmp = currentBuffer;
         currentBuffer = flushBuffer;
         flushBuffer = tmp;
     }
@@ -61,5 +70,44 @@ public class DoubleBuffer {
      */
     public boolean shouldFlush() {
         return currentBuffer.size() >= NameNodeConstant.EDIT_LOG_BUFFER_LIMIT;
+    }
+
+    public Map<Long, Long> getFlushedTxidMap() {
+        return this.flushedTxidMap;
+    }
+
+    /**
+     * 获取一段范围的editlog
+     * @param startTxid
+     * @return
+     */
+    public List<Editlog> getEditlogs(Long startTxid) {
+        List<Editlog> list = new ArrayList<>();
+        try {
+            if(flushedTxidMap.isEmpty()){
+                ByteArrayOutputStream arrayOutputStream = currentBuffer.getBuffer();
+                if(arrayOutputStream.size() <= 0){
+                    return Collections.emptyList();
+                }
+                String editlogsStr = new String(arrayOutputStream.toByteArray());
+                for (String editlogStr : editlogsStr.split("\n")) {
+                    list.add(JSONUtil.toBean(editlogStr,Editlog.class));
+                }
+                return list;
+            }
+            for (Map.Entry<Long, Long> txidMapEntry : flushedTxidMap.entrySet()) {
+                if(txidMapEntry.getValue() <= startTxid){
+                    continue;
+                }
+                List<String> editlogsStr = Files.readAllLines(Paths.get(String.format(NameNodeConstant.EDITLOG_FILE_PATH, txidMapEntry.getKey().toString(), txidMapEntry.getValue().toString())));
+                for (String editlogStr : editlogsStr) {
+                    list.add(JSONUtil.toBean(editlogStr,Editlog.class));
+                }
+                break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

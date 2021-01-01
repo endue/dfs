@@ -9,7 +9,7 @@ package com.simon.dfs.namenode.rpc.model;
 public  final class ShutdownRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:com.simon.dfs.namenode.rpc.ShutdownRequest)
-    ShutdownRequestOrBuilder {
+        ShutdownRequestOrBuilder {
   // Use ShutdownRequest.newBuilder() to construct.
   private ShutdownRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);

@@ -1,4 +1,4 @@
-package com.simon.dfs.namenode.directory;
+package com.simon.dfs.backupdanode.server;
 
 import cn.hutool.json.JSONUtil;
 
@@ -8,13 +8,21 @@ import cn.hutool.json.JSONUtil;
  * @Date: 2020/12/30 23:17
  * @Version: 1.0
  */
-public class EditLog {
+public class Editlog {
 
     protected Long txid;
     protected String operation;
 
-    public EditLog(Long txid, String operation) {
+    public Editlog(Long txid, String operation) {
         this.txid = txid;
         this.operation = JSONUtil.parseObj(operation).set("txid",this.txid).toString();
+    }
+
+    public Long getTxid() {
+        return txid;
+    }
+
+    public String getOperation() {
+        return operation;
     }
 }

@@ -9,7 +9,7 @@ package com.simon.dfs.namenode.rpc.model;
 public  final class RegisterRequest extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:com.simon.dfs.namenode.rpc.RegisterRequest)
-    RegisterRequestOrBuilder {
+        RegisterRequestOrBuilder {
   // Use RegisterRequest.newBuilder() to construct.
   private RegisterRequest(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);

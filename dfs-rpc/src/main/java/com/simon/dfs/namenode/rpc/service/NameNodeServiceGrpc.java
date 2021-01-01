@@ -56,6 +56,15 @@ public final class NameNodeServiceGrpc {
               "com.simon.dfs.namenode.rpc.NameNodeService", "shutdown"),
           io.grpc.protobuf.ProtoUtils.marshaller(com.simon.dfs.namenode.rpc.model.ShutdownRequest.getDefaultInstance()),
           io.grpc.protobuf.ProtoUtils.marshaller(com.simon.dfs.namenode.rpc.model.ShutdownResponse.getDefaultInstance()));
+  @io.grpc.ExperimentalApi("https://github.com/grpc/grpc-java/issues/1901")
+  public static final io.grpc.MethodDescriptor<com.simon.dfs.namenode.rpc.model.FetchEditlogsRequest,
+      com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse> METHOD_FETCH_EDITLOGS =
+      io.grpc.MethodDescriptor.create(
+          io.grpc.MethodDescriptor.MethodType.UNARY,
+          generateFullMethodName(
+              "com.simon.dfs.namenode.rpc.NameNodeService", "fetchEditlogs"),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.simon.dfs.namenode.rpc.model.FetchEditlogsRequest.getDefaultInstance()),
+          io.grpc.protobuf.ProtoUtils.marshaller(com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse.getDefaultInstance()));
 
   /**
    * Creates a new async stub that supports all call types for the service
@@ -112,6 +121,13 @@ public final class NameNodeServiceGrpc {
       asyncUnimplementedUnaryCall(METHOD_SHUTDOWN, responseObserver);
     }
 
+    /**
+     */
+    public void fetchEditlogs(com.simon.dfs.namenode.rpc.model.FetchEditlogsRequest request,
+        io.grpc.stub.StreamObserver<com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(METHOD_FETCH_EDITLOGS, responseObserver);
+    }
+
     @Override public final io.grpc.ServerServiceDefinition bindService() {
       return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
           .addMethod(
@@ -142,6 +158,13 @@ public final class NameNodeServiceGrpc {
                 com.simon.dfs.namenode.rpc.model.ShutdownRequest,
                 com.simon.dfs.namenode.rpc.model.ShutdownResponse>(
                   this, METHODID_SHUTDOWN)))
+          .addMethod(
+            METHOD_FETCH_EDITLOGS,
+            asyncUnaryCall(
+              new MethodHandlers<
+                com.simon.dfs.namenode.rpc.model.FetchEditlogsRequest,
+                com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse>(
+                  this, METHODID_FETCH_EDITLOGS)))
           .build();
     }
   }
@@ -195,6 +218,14 @@ public final class NameNodeServiceGrpc {
       ClientCalls.asyncUnaryCall(
           getChannel().newCall(METHOD_SHUTDOWN, getCallOptions()), request, responseObserver);
     }
+
+    /**
+     */
+    public void fetchEditlogs(com.simon.dfs.namenode.rpc.model.FetchEditlogsRequest request,
+        io.grpc.stub.StreamObserver<com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse> responseObserver) {
+      ClientCalls.asyncUnaryCall(
+          getChannel().newCall(METHOD_FETCH_EDITLOGS, getCallOptions()), request, responseObserver);
+    }
   }
 
   /**
@@ -241,6 +272,13 @@ public final class NameNodeServiceGrpc {
     public com.simon.dfs.namenode.rpc.model.ShutdownResponse shutdown(com.simon.dfs.namenode.rpc.model.ShutdownRequest request) {
       return blockingUnaryCall(
           getChannel(), METHOD_SHUTDOWN, getCallOptions(), request);
+    }
+
+    /**
+     */
+    public com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse fetchEditlogs(com.simon.dfs.namenode.rpc.model.FetchEditlogsRequest request) {
+      return blockingUnaryCall(
+          getChannel(), METHOD_FETCH_EDITLOGS, getCallOptions(), request);
     }
   }
 
@@ -293,12 +331,21 @@ public final class NameNodeServiceGrpc {
       return futureUnaryCall(
           getChannel().newCall(METHOD_SHUTDOWN, getCallOptions()), request);
     }
+
+    /**
+     */
+    public com.google.common.util.concurrent.ListenableFuture<com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse> fetchEditlogs(
+        com.simon.dfs.namenode.rpc.model.FetchEditlogsRequest request) {
+      return futureUnaryCall(
+          getChannel().newCall(METHOD_FETCH_EDITLOGS, getCallOptions()), request);
+    }
   }
 
   private static final int METHODID_REGISTER = 0;
   private static final int METHODID_HEARTBEAT = 1;
   private static final int METHODID_MKDIR = 2;
   private static final int METHODID_SHUTDOWN = 3;
+  private static final int METHODID_FETCH_EDITLOGS = 4;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -332,6 +379,10 @@ public final class NameNodeServiceGrpc {
         case METHODID_SHUTDOWN:
           serviceImpl.shutdown((com.simon.dfs.namenode.rpc.model.ShutdownRequest) request,
               (io.grpc.stub.StreamObserver<com.simon.dfs.namenode.rpc.model.ShutdownResponse>) responseObserver);
+          break;
+        case METHODID_FETCH_EDITLOGS:
+          serviceImpl.fetchEditlogs((com.simon.dfs.namenode.rpc.model.FetchEditlogsRequest) request,
+              (io.grpc.stub.StreamObserver<com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -370,6 +421,7 @@ public final class NameNodeServiceGrpc {
               .addMethod(METHOD_HEARTBEAT)
               .addMethod(METHOD_MKDIR)
               .addMethod(METHOD_SHUTDOWN)
+              .addMethod(METHOD_FETCH_EDITLOGS)
               .build();
         }
       }

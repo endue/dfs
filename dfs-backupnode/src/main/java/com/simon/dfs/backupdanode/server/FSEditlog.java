@@ -1,7 +1,6 @@
-package com.simon.dfs.namenode.directory;
+package com.simon.dfs.backupdanode.server;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * @Author:
@@ -18,7 +17,7 @@ public class FSEditlog {
     /**
      * 内存双缓冲区
      */
-    private DoubleBuffer doubleBuffer = new DoubleBuffer();
+    private DoubleBuffer editLogBuffer = new DoubleBuffer();
     /**
      * 是否需要刷磁盘
      */
@@ -51,12 +50,12 @@ public class FSEditlog {
             Editlog log = new Editlog(txid, operation);
             // 写日志
             try {
-                doubleBuffer.write(log);
+                editLogBuffer.write(log);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             // 当前buffer是否需要刷磁盘
-            if(!doubleBuffer.shouldFlush()){
+            if(!editLogBuffer.shouldFlush()){
                 return;
             }
             // 需要刷磁盘
@@ -102,16 +101,16 @@ public class FSEditlog {
             }
 
             // 交换两块缓冲区
-            doubleBuffer.setReadyToFlush();
+            editLogBuffer.setReadyToFlush();
             shouldFlush = false;
             notifyAll();
             // 记录最大刷磁盘ID
-            flushMaxTxid = doubleBuffer.getFlushMaxTxid();
+            flushMaxTxid = editLogBuffer.getFlushMaxTxid();
             // 修改正在刷磁盘标识符
             flushing = true;
         }
 
-        doubleBuffer.flush();
+        editLogBuffer.flush();
 
         synchronized(this) {
             flushing = false;
@@ -120,13 +119,7 @@ public class FSEditlog {
     }
 
     public void flush() {
-        this.doubleBuffer.setReadyToFlush();
-        this.doubleBuffer.flush();
-    }
-
-    public List<Editlog> getEditlogs(Long startTxid) {
-        synchronized (this){
-            return doubleBuffer.getEditlogs(startTxid);
-        }
+        this.editLogBuffer.setReadyToFlush();
+        this.editLogBuffer.flush();
     }
 }

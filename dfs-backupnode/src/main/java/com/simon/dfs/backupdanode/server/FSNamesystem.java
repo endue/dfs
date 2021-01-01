@@ -1,8 +1,6 @@
-package com.simon.dfs.namenode.directory;
+package com.simon.dfs.backupdanode.server;
 
 import com.simon.dfs.common.utils.EditlogUtil;
-
-import java.util.List;
 
 /**
  * @Author:
@@ -34,9 +32,5 @@ public class FSNamesystem {
 
     public void shutdown() {
         this.editlog.flush();
-    }
-
-    public List<Editlog> getEditlogs(Long startTxid) {
-        return this.editlog.getEditlogs(startTxid);
     }
 }

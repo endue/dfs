@@ -54,6 +54,16 @@ public final class NameNodeRpcModel {
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_simon_dfs_namenode_rpc_ShutdownResponse_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsRequest_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsRequest_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -71,9 +81,12 @@ public final class NameNodeRpcModel {
       "Response\022\016\n\006status\030\001 \001(\005\"\034\n\014MkdirRequest" +
       "\022\014\n\004path\030\001 \001(\t\"\037\n\rMkdirResponse\022\016\n\006statu" +
       "s\030\001 \001(\005\"\037\n\017ShutdownRequest\022\014\n\004code\030\001 \001(\005" +
-      "\"\"\n\020ShutdownResponse\022\016\n\006status\030\001 \001(\005B6\n " +
-      "com.simon.dfs.namenode.rpc.modelB\020NameNo",
-      "deRpcModelP\001b\006proto3"
+      "\"\"\n\020ShutdownResponse\022\016\n\006status\030\001 \001(\005\"<\n\024" +
+      "FetchEditlogsRequest\022\014\n\004code\030\001 \001(\005\022\026\n\016fe",
+      "tchedMaxTxid\030\002 \001(\003\")\n\025FetchEditlogsRespo" +
+      "nse\022\020\n\010editlogs\030\001 \001(\tB6\n com.simon.dfs.n" +
+      "amenode.rpc.modelB\020NameNodeRpcModelP\001b\006p" +
+      "roto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -135,6 +148,18 @@ public final class NameNodeRpcModel {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_simon_dfs_namenode_rpc_ShutdownResponse_descriptor,
         new String[] { "Status", });
+    internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsRequest_descriptor =
+      getDescriptor().getMessageTypes().get(8);
+    internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsRequest_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsRequest_descriptor,
+        new String[] { "Code", "FetchedMaxTxid", });
+    internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_descriptor =
+      getDescriptor().getMessageTypes().get(9);
+    internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_descriptor,
+        new String[] { "Editlogs", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

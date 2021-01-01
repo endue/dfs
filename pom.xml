@@ -13,6 +13,7 @@
     <module>dfs-rpc</module>
       <module>dfs-client</module>
     <module>dfs-common</module>
+      <module>dfs-backupnode</module>
   </modules>
   <packaging>pom</packaging>
 

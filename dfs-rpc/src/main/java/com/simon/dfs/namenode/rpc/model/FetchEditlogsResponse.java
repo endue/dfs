@@ -4,18 +4,18 @@
 package com.simon.dfs.namenode.rpc.model;
 
 /**
- * Protobuf type {@code com.simon.dfs.namenode.rpc.HeartbeatResponse}
+ * Protobuf type {@code com.simon.dfs.namenode.rpc.FetchEditlogsResponse}
  */
-public  final class HeartbeatResponse extends
+public  final class FetchEditlogsResponse extends
     com.google.protobuf.GeneratedMessageV3 implements
-    // @@protoc_insertion_point(message_implements:com.simon.dfs.namenode.rpc.HeartbeatResponse)
-        HeartbeatResponseOrBuilder {
-  // Use HeartbeatResponse.newBuilder() to construct.
-  private HeartbeatResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // @@protoc_insertion_point(message_implements:com.simon.dfs.namenode.rpc.FetchEditlogsResponse)
+        FetchEditlogsResponseOrBuilder {
+  // Use FetchEditlogsResponse.newBuilder() to construct.
+  private FetchEditlogsResponse(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
     super(builder);
   }
-  private HeartbeatResponse() {
-    status_ = 0;
+  private FetchEditlogsResponse() {
+    editlogs_ = "";
   }
 
   @Override
@@ -23,7 +23,7 @@ public  final class HeartbeatResponse extends
   getUnknownFields() {
     return com.google.protobuf.UnknownFieldSet.getDefaultInstance();
   }
-  private HeartbeatResponse(
+  private FetchEditlogsResponse(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
@@ -43,9 +43,10 @@ public  final class HeartbeatResponse extends
             }
             break;
           }
-          case 8: {
+          case 10: {
+            String s = input.readStringRequireUtf8();
 
-            status_ = input.readInt32();
+            editlogs_ = s;
             break;
           }
         }
@@ -61,23 +62,48 @@ public  final class HeartbeatResponse extends
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_HeartbeatResponse_descriptor;
+    return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_descriptor;
   }
 
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_HeartbeatResponse_fieldAccessorTable
+    return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
-            com.simon.dfs.namenode.rpc.model.HeartbeatResponse.class, com.simon.dfs.namenode.rpc.model.HeartbeatResponse.Builder.class);
+            com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse.class, com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse.Builder.class);
   }
 
-  public static final int STATUS_FIELD_NUMBER = 1;
-  private int status_;
+  public static final int EDITLOGS_FIELD_NUMBER = 1;
+  private volatile Object editlogs_;
   /**
-   * <code>optional int32 status = 1;</code>
+   * <code>optional string editlogs = 1;</code>
    */
-  public int getStatus() {
-    return status_;
+  public String getEditlogs() {
+    Object ref = editlogs_;
+    if (ref instanceof String) {
+      return (String) ref;
+    } else {
+      com.google.protobuf.ByteString bs =
+          (com.google.protobuf.ByteString) ref;
+      String s = bs.toStringUtf8();
+      editlogs_ = s;
+      return s;
+    }
+  }
+  /**
+   * <code>optional string editlogs = 1;</code>
+   */
+  public com.google.protobuf.ByteString
+      getEditlogsBytes() {
+    Object ref = editlogs_;
+    if (ref instanceof String) {
+      com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString.copyFromUtf8(
+              (String) ref);
+      editlogs_ = b;
+      return b;
+    } else {
+      return (com.google.protobuf.ByteString) ref;
+    }
   }
 
   private byte memoizedIsInitialized = -1;
@@ -92,8 +118,8 @@ public  final class HeartbeatResponse extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (status_ != 0) {
-      output.writeInt32(1, status_);
+    if (!getEditlogsBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, editlogs_);
     }
   }
 
@@ -102,9 +128,8 @@ public  final class HeartbeatResponse extends
     if (size != -1) return size;
 
     size = 0;
-    if (status_ != 0) {
-      size += com.google.protobuf.CodedOutputStream
-        .computeInt32Size(1, status_);
+    if (!getEditlogsBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, editlogs_);
     }
     memoizedSize = size;
     return size;
@@ -116,14 +141,14 @@ public  final class HeartbeatResponse extends
     if (obj == this) {
      return true;
     }
-    if (!(obj instanceof com.simon.dfs.namenode.rpc.model.HeartbeatResponse)) {
+    if (!(obj instanceof com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse)) {
       return super.equals(obj);
     }
-    com.simon.dfs.namenode.rpc.model.HeartbeatResponse other = (com.simon.dfs.namenode.rpc.model.HeartbeatResponse) obj;
+    com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse other = (com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse) obj;
 
     boolean result = true;
-    result = result && (getStatus()
-        == other.getStatus());
+    result = result && getEditlogs()
+        .equals(other.getEditlogs());
     return result;
   }
 
@@ -134,65 +159,65 @@ public  final class HeartbeatResponse extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + STATUS_FIELD_NUMBER;
-    hash = (53 * hash) + getStatus();
+    hash = (37 * hash) + EDITLOGS_FIELD_NUMBER;
+    hash = (53 * hash) + getEditlogs().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
   }
 
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseFrom(
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseFrom(
       com.google.protobuf.ByteString data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseFrom(
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseFrom(
       com.google.protobuf.ByteString data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseFrom(byte[] data)
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseFrom(byte[] data)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data);
   }
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseFrom(
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseFrom(
       byte[] data,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws com.google.protobuf.InvalidProtocolBufferException {
     return PARSER.parseFrom(data, extensionRegistry);
   }
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseFrom(java.io.InputStream input)
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseFrom(
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseDelimitedFrom(java.io.InputStream input)
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseDelimitedFrom(
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
   }
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseFrom(
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseFrom(
       com.google.protobuf.CodedInputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input);
   }
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse parseFrom(
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parseFrom(
       com.google.protobuf.CodedInputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
       throws java.io.IOException {
@@ -204,7 +229,7 @@ public  final class HeartbeatResponse extends
   public static Builder newBuilder() {
     return DEFAULT_INSTANCE.toBuilder();
   }
-  public static Builder newBuilder(com.simon.dfs.namenode.rpc.model.HeartbeatResponse prototype) {
+  public static Builder newBuilder(com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse prototype) {
     return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
   }
   public Builder toBuilder() {
@@ -219,25 +244,25 @@ public  final class HeartbeatResponse extends
     return builder;
   }
   /**
-   * Protobuf type {@code com.simon.dfs.namenode.rpc.HeartbeatResponse}
+   * Protobuf type {@code com.simon.dfs.namenode.rpc.FetchEditlogsResponse}
    */
   public static final class Builder extends
       com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-      // @@protoc_insertion_point(builder_implements:com.simon.dfs.namenode.rpc.HeartbeatResponse)
-      com.simon.dfs.namenode.rpc.model.HeartbeatResponseOrBuilder {
+      // @@protoc_insertion_point(builder_implements:com.simon.dfs.namenode.rpc.FetchEditlogsResponse)
+      com.simon.dfs.namenode.rpc.model.FetchEditlogsResponseOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_HeartbeatResponse_descriptor;
+      return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_HeartbeatResponse_fieldAccessorTable
+      return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.simon.dfs.namenode.rpc.model.HeartbeatResponse.class, com.simon.dfs.namenode.rpc.model.HeartbeatResponse.Builder.class);
+              com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse.class, com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse.Builder.class);
     }
 
-    // Construct using com.simon.dfs.namenode.rpc.model.HeartbeatResponse.newBuilder()
+    // Construct using com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse.newBuilder()
     private Builder() {
       maybeForceBuilderInitialization();
     }
@@ -254,31 +279,31 @@ public  final class HeartbeatResponse extends
     }
     public Builder clear() {
       super.clear();
-      status_ = 0;
+      editlogs_ = "";
 
       return this;
     }
 
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_HeartbeatResponse_descriptor;
+      return com.simon.dfs.namenode.rpc.model.NameNodeRpcModel.internal_static_com_simon_dfs_namenode_rpc_FetchEditlogsResponse_descriptor;
     }
 
-    public com.simon.dfs.namenode.rpc.model.HeartbeatResponse getDefaultInstanceForType() {
-      return com.simon.dfs.namenode.rpc.model.HeartbeatResponse.getDefaultInstance();
+    public com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse getDefaultInstanceForType() {
+      return com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse.getDefaultInstance();
     }
 
-    public com.simon.dfs.namenode.rpc.model.HeartbeatResponse build() {
-      com.simon.dfs.namenode.rpc.model.HeartbeatResponse result = buildPartial();
+    public com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse build() {
+      com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse result = buildPartial();
       if (!result.isInitialized()) {
         throw newUninitializedMessageException(result);
       }
       return result;
     }
 
-    public com.simon.dfs.namenode.rpc.model.HeartbeatResponse buildPartial() {
-      com.simon.dfs.namenode.rpc.model.HeartbeatResponse result = new com.simon.dfs.namenode.rpc.model.HeartbeatResponse(this);
-      result.status_ = status_;
+    public com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse buildPartial() {
+      com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse result = new com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse(this);
+      result.editlogs_ = editlogs_;
       onBuilt();
       return result;
     }
@@ -310,18 +335,19 @@ public  final class HeartbeatResponse extends
       return (Builder) super.addRepeatedField(field, value);
     }
     public Builder mergeFrom(com.google.protobuf.Message other) {
-      if (other instanceof com.simon.dfs.namenode.rpc.model.HeartbeatResponse) {
-        return mergeFrom((com.simon.dfs.namenode.rpc.model.HeartbeatResponse)other);
+      if (other instanceof com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse) {
+        return mergeFrom((com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse)other);
       } else {
         super.mergeFrom(other);
         return this;
       }
     }
 
-    public Builder mergeFrom(com.simon.dfs.namenode.rpc.model.HeartbeatResponse other) {
-      if (other == com.simon.dfs.namenode.rpc.model.HeartbeatResponse.getDefaultInstance()) return this;
-      if (other.getStatus() != 0) {
-        setStatus(other.getStatus());
+    public Builder mergeFrom(com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse other) {
+      if (other == com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse.getDefaultInstance()) return this;
+      if (!other.getEditlogs().isEmpty()) {
+        editlogs_ = other.editlogs_;
+        onChanged();
       }
       onChanged();
       return this;
@@ -335,11 +361,11 @@ public  final class HeartbeatResponse extends
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      com.simon.dfs.namenode.rpc.model.HeartbeatResponse parsedMessage = null;
+      com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse parsedMessage = null;
       try {
         parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (com.simon.dfs.namenode.rpc.model.HeartbeatResponse) e.getUnfinishedMessage();
+        parsedMessage = (com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
         if (parsedMessage != null) {
@@ -349,28 +375,71 @@ public  final class HeartbeatResponse extends
       return this;
     }
 
-    private int status_ ;
+    private Object editlogs_ = "";
     /**
-     * <code>optional int32 status = 1;</code>
+     * <code>optional string editlogs = 1;</code>
      */
-    public int getStatus() {
-      return status_;
+    public String getEditlogs() {
+      Object ref = editlogs_;
+      if (!(ref instanceof String)) {
+        com.google.protobuf.ByteString bs =
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        editlogs_ = s;
+        return s;
+      } else {
+        return (String) ref;
+      }
     }
     /**
-     * <code>optional int32 status = 1;</code>
+     * <code>optional string editlogs = 1;</code>
      */
-    public Builder setStatus(int value) {
+    public com.google.protobuf.ByteString
+        getEditlogsBytes() {
+      Object ref = editlogs_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b =
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (String) ref);
+        editlogs_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+    /**
+     * <code>optional string editlogs = 1;</code>
+     */
+    public Builder setEditlogs(
+        String value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
 
-      status_ = value;
+      editlogs_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>optional int32 status = 1;</code>
+     * <code>optional string editlogs = 1;</code>
      */
-    public Builder clearStatus() {
+    public Builder clearEditlogs() {
 
-      status_ = 0;
+      editlogs_ = getDefaultInstance().getEditlogs();
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>optional string editlogs = 1;</code>
+     */
+    public Builder setEditlogsBytes(
+        com.google.protobuf.ByteString value) {
+      if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+
+      editlogs_ = value;
       onChanged();
       return this;
     }
@@ -385,39 +454,39 @@ public  final class HeartbeatResponse extends
     }
 
 
-    // @@protoc_insertion_point(builder_scope:com.simon.dfs.namenode.rpc.HeartbeatResponse)
+    // @@protoc_insertion_point(builder_scope:com.simon.dfs.namenode.rpc.FetchEditlogsResponse)
   }
 
-  // @@protoc_insertion_point(class_scope:com.simon.dfs.namenode.rpc.HeartbeatResponse)
-  private static final com.simon.dfs.namenode.rpc.model.HeartbeatResponse DEFAULT_INSTANCE;
+  // @@protoc_insertion_point(class_scope:com.simon.dfs.namenode.rpc.FetchEditlogsResponse)
+  private static final com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse DEFAULT_INSTANCE;
   static {
-    DEFAULT_INSTANCE = new com.simon.dfs.namenode.rpc.model.HeartbeatResponse();
+    DEFAULT_INSTANCE = new com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse();
   }
 
-  public static com.simon.dfs.namenode.rpc.model.HeartbeatResponse getDefaultInstance() {
+  public static com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse getDefaultInstance() {
     return DEFAULT_INSTANCE;
   }
 
-  private static final com.google.protobuf.Parser<HeartbeatResponse>
-      PARSER = new com.google.protobuf.AbstractParser<HeartbeatResponse>() {
-    public HeartbeatResponse parsePartialFrom(
+  private static final com.google.protobuf.Parser<FetchEditlogsResponse>
+      PARSER = new com.google.protobuf.AbstractParser<FetchEditlogsResponse>() {
+    public FetchEditlogsResponse parsePartialFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-        return new HeartbeatResponse(input, extensionRegistry);
+        return new FetchEditlogsResponse(input, extensionRegistry);
     }
   };
 
-  public static com.google.protobuf.Parser<HeartbeatResponse> parser() {
+  public static com.google.protobuf.Parser<FetchEditlogsResponse> parser() {
     return PARSER;
   }
 
   @Override
-  public com.google.protobuf.Parser<HeartbeatResponse> getParserForType() {
+  public com.google.protobuf.Parser<FetchEditlogsResponse> getParserForType() {
     return PARSER;
   }
 
-  public com.simon.dfs.namenode.rpc.model.HeartbeatResponse getDefaultInstanceForType() {
+  public com.simon.dfs.namenode.rpc.model.FetchEditlogsResponse getDefaultInstanceForType() {
     return DEFAULT_INSTANCE;
   }
 
