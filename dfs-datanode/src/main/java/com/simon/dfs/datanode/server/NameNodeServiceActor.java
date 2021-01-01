@@ -52,6 +52,7 @@ public class NameNodeServiceActor {
 
         @Override
         public void run() {
+            logger.info("start register{}",DataNodeConstant.DATANODE_IP);
             RegisterRequest request = RegisterRequest.newBuilder()
                     .setIp(DataNodeConstant.DATANODE_IP)
                     .setHostname(DataNodeConstant.DATANODE_HOSTNAME)
@@ -67,7 +68,7 @@ public class NameNodeServiceActor {
             while (true){
                 try {
                     Thread.sleep(TimesConstant.THIRTY_SECONDS);
-
+                    logger.info("start hearbeat{}",DataNodeConstant.DATANODE_IP);
                     HeartbeatRequest request = HeartbeatRequest.newBuilder()
                             .setIp(DataNodeConstant.DATANODE_IP)
                             .setHostname(DataNodeConstant.DATANODE_HOSTNAME)
