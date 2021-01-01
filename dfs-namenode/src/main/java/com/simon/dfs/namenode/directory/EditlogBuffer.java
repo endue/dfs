@@ -1,5 +1,6 @@
 package com.simon.dfs.namenode.directory;
 
+import cn.hutool.json.JSONUtil;
 import com.simon.dfs.common.constants.NameNodeConstant;
 
 import java.io.ByteArrayOutputStream;
@@ -27,11 +28,13 @@ public class EditlogBuffer {
     }
 
     public void write(Editlog editLog) throws IOException {
-        if(fulshMinTxid < 0){
+        if(fulshMinTxid < 0 || fulshMinTxid > editLog.txid){
             this.fulshMinTxid = editLog.txid;
         }
-        this.flushMaxTxid = editLog.txid;
-        this.buffer.write(editLog.operation.getBytes());
+        if(flushMaxTxid < editLog.txid){
+            this.flushMaxTxid = editLog.txid;
+        }
+        this.buffer.write(JSONUtil.toJsonStr(editLog).getBytes());
         this.buffer.write("\n".getBytes());
     }
 
@@ -54,6 +57,9 @@ public class EditlogBuffer {
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
+
+            fulshMinTxid = flushMaxTxid = -1L;
+
             if(randomAccessFile != null){
                 try {
                     randomAccessFile.close();

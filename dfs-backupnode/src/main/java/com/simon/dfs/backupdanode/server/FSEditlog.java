@@ -1,6 +1,7 @@
 package com.simon.dfs.backupdanode.server;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @Author:
@@ -17,11 +18,11 @@ public class FSEditlog {
     /**
      * 内存双缓冲区
      */
-    private DoubleBuffer editLogBuffer = new DoubleBuffer();
+    private DoubleBuffer doubleBuffer = new DoubleBuffer();
     /**
      * 是否需要刷磁盘
      */
-    private volatile Boolean shouldFlush = false;
+    private volatile Boolean needFlush = false;
     /**
      * 正在刷磁盘
      */
@@ -29,7 +30,7 @@ public class FSEditlog {
     /**
      * 同步到磁盘中最大txid
      */
-    private volatile Long flushMaxTxid = 0L;
+    private volatile Long flushedMaxTxid = 0L;
     /**
      * 线程txid
      */
@@ -37,29 +38,28 @@ public class FSEditlog {
 
     /**
      * 写日志
-     * @param operation
+     * @param path
      */
-    public void logEdit(String operation) {
+    public void logEdit(String path,String op) {
         synchronized(this) {
-            // 如果有线程正在刷磁盘则等待
-            waitFlush();
-            // 组装日志
-            txid++;
+            // 如果有线程需要刷磁盘则等待
+            waitNeedFlush();
+            // 记录日志
+            this.txid++;
             long txid = this.txid;
             threadTxid.set(txid);
-            Editlog log = new Editlog(txid, operation);
-            // 写日志
+            Editlog log = new Editlog(txid, path,op);
             try {
-                editLogBuffer.write(log);
+                doubleBuffer.write(log);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             // 当前buffer是否需要刷磁盘
-            if(!editLogBuffer.shouldFlush()){
+            if(!doubleBuffer.shouldFlush()){
                 return;
             }
             // 需要刷磁盘
-            shouldFlush = true;
+            needFlush = true;
         }
         // 刷磁盘
         logFlush();
@@ -68,10 +68,10 @@ public class FSEditlog {
     /**
      * 等待刷磁盘操作结束
      */
-    private void waitFlush() {
+    private void waitNeedFlush() {
         try {
-            while (shouldFlush){
-                Thread.sleep(1000);
+            while (needFlush){
+                wait(1000);
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -86,8 +86,8 @@ public class FSEditlog {
             // 其他线程正在刷磁盘
             if(flushing) {
                 // 当前线程日志已被其他线程处理,退出本次刷磁盘操作
-                long txid = threadTxid.get();
-                if(txid <= flushMaxTxid) {
+                Long txid = threadTxid.get();
+                if(txid <= flushedMaxTxid) {
                     return;
                 }
                 // 等待其他线程刷磁盘完毕
@@ -100,17 +100,17 @@ public class FSEditlog {
                 }
             }
 
+            // 修改最大刷磁盘ID
+            flushedMaxTxid = doubleBuffer.getFlushMaxTxid();
             // 交换两块缓冲区
-            editLogBuffer.setReadyToFlush();
-            shouldFlush = false;
+            doubleBuffer.setReadyToFlush();
+            needFlush = false;
             notifyAll();
-            // 记录最大刷磁盘ID
-            flushMaxTxid = editLogBuffer.getFlushMaxTxid();
             // 修改正在刷磁盘标识符
             flushing = true;
         }
 
-        editLogBuffer.flush();
+        this.flush();
 
         synchronized(this) {
             flushing = false;
@@ -119,7 +119,12 @@ public class FSEditlog {
     }
 
     public void flush() {
-        this.editLogBuffer.setReadyToFlush();
-        this.editLogBuffer.flush();
+        this.doubleBuffer.flush();
+    }
+
+    public List<Editlog> getEditlogs(Long fetchedMaxTxid) {
+        synchronized (this){
+            return doubleBuffer.getEditlogs(fetchedMaxTxid);
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.simon.dfs.backupdanode.server;
 
+import cn.hutool.json.JSONUtil;
+import com.simon.dfs.common.constants.BackupNodeConstant;
 import com.simon.dfs.common.constants.NameNodeConstant;
 
 import java.io.ByteArrayOutputStream;
@@ -21,16 +23,19 @@ public class EditlogBuffer {
     private Long flushMaxTxid = -1L;
     private Long fulshMinTxid = -1L;
 
+
     public EditlogBuffer() {
         this.buffer = new ByteArrayOutputStream(NameNodeConstant.EDIT_LOG_BUFFER_LIMIT.intValue());
     }
 
     public void write(Editlog editLog) throws IOException {
-        if(fulshMinTxid < 0){
+        if(fulshMinTxid < 0 || fulshMinTxid > editLog.txid){
             this.fulshMinTxid = editLog.txid;
         }
-        this.flushMaxTxid = editLog.txid;
-        this.buffer.write(editLog.operation.getBytes());
+        if(flushMaxTxid < editLog.txid){
+            this.flushMaxTxid = editLog.txid;
+        }
+        this.buffer.write(JSONUtil.toJsonStr(editLog).getBytes());
         this.buffer.write("\n".getBytes());
     }
 
@@ -44,7 +49,7 @@ public class EditlogBuffer {
         FileChannel fileChannel = null;
 
         try {
-            randomAccessFile = new RandomAccessFile(String.format(NameNodeConstant.EDITLOG_FILE_PATH,fulshMinTxid,flushMaxTxid),"rw");
+            randomAccessFile = new RandomAccessFile(String.format(BackupNodeConstant.EDITLOG_FILE_PATH,fulshMinTxid,flushMaxTxid),"rw");
             outputStream = new FileOutputStream(randomAccessFile.getFD());
             fileChannel = outputStream.getChannel();
 
@@ -53,6 +58,9 @@ public class EditlogBuffer {
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
+
+            fulshMinTxid = flushMaxTxid = -1L;
+
             if(randomAccessFile != null){
                 try {
                     randomAccessFile.close();
@@ -87,5 +95,13 @@ public class EditlogBuffer {
 
     public Long getFlushMaxTxid() {
         return flushMaxTxid;
+    }
+
+    public Long getFulshMinTxid() {
+        return fulshMinTxid;
+    }
+
+    public ByteArrayOutputStream getBuffer() {
+        return buffer;
     }
 }

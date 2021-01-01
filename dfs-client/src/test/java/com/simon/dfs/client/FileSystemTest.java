@@ -3,6 +3,8 @@ package com.simon.dfs.client;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * @Author:
  * @Description:
@@ -19,24 +21,26 @@ public class FileSystemTest {
     }
     @Test
     public void mkdir(){
-
-		for(int i = 0; i < 5;i++){
-			new Thread(() -> {
-				for(int j = 0; j < 200; j++) {
-					try {
-						fileSystem.mkdir("/usr/warehouse/hive" + j + "_" + Thread.currentThread().getName());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}).start();
-		}
 		try {
-			Thread.sleep(2000);
+			CountDownLatch countDownLatch = new CountDownLatch(5);
+			for(int i = 0; i < 5;i++){
+				new Thread(() -> {
+					for(int j = 0; j < 200; j++) {
+						try {
+							fileSystem.mkdir("/usr/warehouse/hive" + j + "_" + Thread.currentThread().getName());
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					countDownLatch.countDown();
+				}).start();
+			}
+
+			countDownLatch.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-    }
+	}
 
     @Test
     public void shutdown(){

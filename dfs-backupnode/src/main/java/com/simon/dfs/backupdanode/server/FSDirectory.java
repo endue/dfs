@@ -24,7 +24,7 @@ public class FSDirectory {
      * @param path
      */
     public void mkdir(String path) {
-        synchronized(nodeDirectory) {
+        synchronized(this) {
             if(StrUtil.isBlankIfStr(path)) return;
 
             int firstIndex = path.indexOf(StrUtil.SLASH);

@@ -1,9 +1,14 @@
 package com.simon.dfs.namenode.directory;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.simon.dfs.common.constants.NameNodeConstant;
+import com.simon.dfs.common.utils.EditlogUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,7 +21,7 @@ import java.util.*;
  * @Version: 1.0
  */
 public class DoubleBuffer {
-
+    private final Logger logger = LoggerFactory.getLogger(DoubleBuffer.class);
     /**
      * 当前buffer
      */
@@ -42,7 +47,6 @@ public class DoubleBuffer {
      */
     public void setReadyToFlush() {
         flushedTxidMap.put(currentBuffer.getFulshMinTxid(),currentBuffer.getFlushMaxTxid());
-
         EditlogBuffer tmp = currentBuffer;
         currentBuffer = flushBuffer;
         flushBuffer = tmp;
@@ -53,7 +57,7 @@ public class DoubleBuffer {
      * @return
      */
     public Long getFlushMaxTxid() {
-        return flushBuffer.getFlushMaxTxid();
+        return currentBuffer.getFlushMaxTxid();
     }
 
     /**
@@ -72,19 +76,43 @@ public class DoubleBuffer {
         return currentBuffer.size() >= NameNodeConstant.EDIT_LOG_BUFFER_LIMIT;
     }
 
-    public Map<Long, Long> getFlushedTxidMap() {
-        return this.flushedTxidMap;
-    }
-
     /**
      * 获取一段范围的editlog
-     * @param startTxid
+     * @param fetchedMaxTxid
      * @return
      */
-    public List<Editlog> getEditlogs(Long startTxid) {
+    public List<Editlog> getEditlogs(Long fetchedMaxTxid) {
         List<Editlog> list = new ArrayList<>();
         try {
-            if(flushedTxidMap.isEmpty()){
+            // 从内存记录的flush文件读
+            for (Map.Entry<Long, Long> txidMapEntry : flushedTxidMap.entrySet()) {
+                if(txidMapEntry.getValue() <= fetchedMaxTxid){
+                    continue;
+                }
+                List<String> editlogsStr = Files.readAllLines(Paths.get(String.format(NameNodeConstant.EDITLOG_FILE_PATH, txidMapEntry.getKey().toString(), txidMapEntry.getValue().toString())));
+                for (String editlogStr : editlogsStr) {
+                    list.add(JSONUtil.toBean(editlogStr,Editlog.class));
+                }
+                break;
+            }
+            // 从磁盘文件读
+            File editlogs = new File(NameNodeConstant.EDITLOG_PATH);
+            if(list.isEmpty() && editlogs.isDirectory() && editlogs.listFiles().length > 0){
+                List<File> fileList = Arrays.asList(editlogs.listFiles());
+                Collections.sort(fileList, Comparator.comparing(file -> EditlogUtil.getEditlogMinTxid(file.getPath())));
+                for (File file : fileList) {
+                    if(EditlogUtil.getEditlogMaxTxid(file.getPath()) <= fetchedMaxTxid){
+                        continue;
+                    }
+                    List<String> editlogsStr = Files.readAllLines(Paths.get(file.getPath()));
+                    for (String editlogStr : editlogsStr) {
+                        list.add(JSONUtil.toBean(editlogStr,Editlog.class));
+                    }
+                    break;
+                }
+            }
+           // 从内存buffer读
+            if(list.isEmpty() && currentBuffer.getBuffer().size() > 0){
                 ByteArrayOutputStream arrayOutputStream = currentBuffer.getBuffer();
                 if(arrayOutputStream.size() <= 0){
                     return Collections.emptyList();
@@ -93,17 +121,6 @@ public class DoubleBuffer {
                 for (String editlogStr : editlogsStr.split("\n")) {
                     list.add(JSONUtil.toBean(editlogStr,Editlog.class));
                 }
-                return list;
-            }
-            for (Map.Entry<Long, Long> txidMapEntry : flushedTxidMap.entrySet()) {
-                if(txidMapEntry.getValue() <= startTxid){
-                    continue;
-                }
-                List<String> editlogsStr = Files.readAllLines(Paths.get(String.format(NameNodeConstant.EDITLOG_FILE_PATH, txidMapEntry.getKey().toString(), txidMapEntry.getValue().toString())));
-                for (String editlogStr : editlogsStr) {
-                    list.add(JSONUtil.toBean(editlogStr,Editlog.class));
-                }
-                break;
             }
         } catch (IOException e) {
             e.printStackTrace();

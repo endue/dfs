@@ -1,7 +1,5 @@
 package com.simon.dfs.backupdanode.fetcher;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.simon.dfs.backupdanode.BackupNode;
 import com.simon.dfs.backupdanode.rpc.NameNodeRpcClient;
 import com.simon.dfs.backupdanode.server.Editlog;
@@ -39,17 +37,15 @@ public class EditlogFetcher extends Thread {
             try {
                 Thread.sleep(BackupNodeConstant.EDITLOG_FETCHER_INTERVAL);
 
-                logger.info("start fetcher with fetchedMaxTxid {}",fetchedMaxTxid);
+                logger.info("fetcher start with fetchedMaxTxid {}",fetchedMaxTxid);
                 List<Editlog> editlogList = rpcClient.fetchBatchEditlog(fetchedMaxTxid);
                 for (Editlog editlog : editlogList) {
-                    JSONObject operationJSONObject = JSONUtil.parseObj(editlog.getOperation());
-                    String op = operationJSONObject.getStr(EditlogUtil.OP);
-                    String path = operationJSONObject.getStr(EditlogUtil.PATH);
-                    if(EditlogUtil.OP_MKDIR.equals(op)){
-                        fsNamesystem.mkdir(path);
+                    if(EditlogUtil.OP_MKDIR.equals(editlog.getOp())){
+                        fsNamesystem.mkdir(editlog.getPath());
                     }
                     this.fetchedMaxTxid = editlog.getTxid();
                 }
+                logger.info("fetcher end with fetchedMaxTxid {}",fetchedMaxTxid);
             } catch (InterruptedException e) {
                 logger.error("fetcher error fetchedMaxTxid {}",fetchedMaxTxid);
                 e.printStackTrace();

@@ -8,5 +8,7 @@ package com.simon.dfs.common.constants;
  */
 public class BackupNodeConstant {
 
-    public static final long EDITLOG_FETCHER_INTERVAL = TimesConstant.SECOND * 60 * 10;
+    public static final long EDITLOG_FETCHER_INTERVAL = TimesConstant.SECOND * 10;
+
+    public static final String EDITLOG_FILE_PATH = "D:\\TF\\backupnode\\%s-%s.log";
 }

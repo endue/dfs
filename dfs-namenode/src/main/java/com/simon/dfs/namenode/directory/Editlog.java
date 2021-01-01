@@ -11,18 +11,36 @@ import cn.hutool.json.JSONUtil;
 public class Editlog {
 
     protected Long txid;
-    protected String operation;
+    protected String path;
+    protected String op;
 
-    public Editlog(Long txid, String operation) {
+    public Editlog(Long txid, String path,String op) {
         this.txid = txid;
-        this.operation = JSONUtil.parseObj(operation).set("txid",this.txid).toString();
+        this.path = path;
+        this.op = op;
     }
 
     public Long getTxid() {
         return txid;
     }
 
-    public String getOperation() {
-        return operation;
+    public String getPath() {
+        return path;
+    }
+
+    public String getOp() {
+        return op;
+    }
+
+    public void setTxid(Long txid) {
+        this.txid = txid;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setOp(String op) {
+        this.op = op;
     }
 }

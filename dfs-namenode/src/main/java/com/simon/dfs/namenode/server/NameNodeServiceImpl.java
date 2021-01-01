@@ -162,7 +162,7 @@ public class NameNodeServiceImpl extends NameNodeServiceGrpc.NameNodeServiceImpl
         }
 
        FetchEditlogsResponse response = FetchEditlogsResponse.newBuilder()
-                .setEditlogs(JSONUtil.parseArray(request).toString())
+                .setEditlogs(JSONUtil.parseArray(result).toString())
                 .build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();

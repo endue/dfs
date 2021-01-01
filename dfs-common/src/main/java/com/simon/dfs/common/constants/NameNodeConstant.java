@@ -11,8 +11,8 @@ public class NameNodeConstant {
     public static final String NAMENODE_HOSTNAME = "localhost";
     public static final Integer NAMENODE_PORT = 50070;
 
-    public static final Long EDIT_LOG_BUFFER_LIMIT = 25 * 1024L;
+    public static final Long EDIT_LOG_BUFFER_LIMIT = 1 * 1024L;
 
-
+    public static final String EDITLOG_PATH = "D:\\TF\\editlogs\\";
     public static final String EDITLOG_FILE_PATH = "D:\\TF\\editlogs\\%s-%s.log";
 }

@@ -2,6 +2,8 @@ package com.simon.dfs.backupdanode.server;
 
 import com.simon.dfs.common.utils.EditlogUtil;
 
+import java.util.List;
+
 /**
  * @Author:
  * @Description:
@@ -26,11 +28,15 @@ public class FSNamesystem {
      */
     public boolean mkdir(String path) {
         this.directory.mkdir(path);
-        this.editlog.logEdit(EditlogUtil.mkdir(path));
-        return false;
+        this.editlog.logEdit(path,EditlogUtil.OP_MKDIR);
+        return true;
     }
 
     public void shutdown() {
         this.editlog.flush();
+    }
+
+    public List<Editlog> getEditlogs(Long fetchedMaxTxid) {
+        return this.editlog.getEditlogs(fetchedMaxTxid);
     }
 }
