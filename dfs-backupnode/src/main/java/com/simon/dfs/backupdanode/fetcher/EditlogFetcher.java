@@ -52,4 +52,8 @@ public class EditlogFetcher extends Thread {
             }
         }
     }
+
+    public long getFetchedMaxTxid() {
+        return fetchedMaxTxid;
+    }
 }

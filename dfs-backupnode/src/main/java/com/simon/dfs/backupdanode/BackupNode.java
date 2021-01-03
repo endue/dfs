@@ -1,5 +1,6 @@
 package com.simon.dfs.backupdanode;
 
+import com.simon.dfs.backupdanode.checkpoint.EditlogCheckpoint;
 import com.simon.dfs.backupdanode.fetcher.EditlogFetcher;
 import com.simon.dfs.backupdanode.server.FSNamesystem;
 
@@ -14,12 +15,15 @@ public class BackupNode {
     private FSNamesystem namesystem;
     private volatile boolean running = false;
     private EditlogFetcher editlogFetcher;
+    private EditlogCheckpoint editlogCheckpoint;
 
     private void initialize(){
         this.running = true;
         this.namesystem = new FSNamesystem();
         this.editlogFetcher = new EditlogFetcher(this,namesystem);
         this.editlogFetcher.start();
+        this.editlogCheckpoint = new EditlogCheckpoint(this,namesystem,editlogFetcher);
+        this.editlogCheckpoint.start();
     }
 
     private void start() {

@@ -117,4 +117,8 @@ public class FSDirectory {
      * 接口
      */
     private interface Node{}
+
+    public NodeDirectory getNodeDirectory() {
+        return nodeDirectory;
+    }
 }
