@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author:
@@ -32,7 +33,7 @@ public class DoubleBuffer {
     private EditlogBuffer flushBuffer = new EditlogBuffer();
 
     // 已刷盘的txid组
-    private Map<Long,Long> flushedTxidMap = new HashMap<>();
+    private Map<Long,Long> flushedTxidMap = new TreeMap<>();
 
     /**
      * 将edits log写到内存缓冲里去
@@ -95,6 +96,7 @@ public class DoubleBuffer {
                 }
                 break;
             }
+
             // 从磁盘文件读
             File editlogs = new File(NameNodeConstant.EDITLOG_PATH);
             if(list.isEmpty() && editlogs.isDirectory() && editlogs.listFiles().length > 0){

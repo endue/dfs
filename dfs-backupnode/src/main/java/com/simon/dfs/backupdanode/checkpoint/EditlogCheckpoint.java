@@ -42,8 +42,8 @@ public class EditlogCheckpoint extends Thread{
                 logger.info("开始 checkpoint fetchedMaxTxid {}",editlogFetcher.getFetchedMaxTxid());
                 FSDirectory.NodeDirectory nodeDirectory = fsNamesystem.getDirectory().getNodeDirectory();
                 String tree = JSONUtil.toJsonStr(nodeDirectory);
-                doCheckPoint(tree);
                 clearLastEditlogCheckpoint();
+                doCheckPoint(tree);
             }
         }catch (Exception e){
             e.printStackTrace();
