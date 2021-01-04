@@ -14,3 +14,11 @@
 - 定时心跳
 ## 架构图
 ![架构图](img/2021-01-01/img.jpg)
+
+# 2021-1-3
+## 实现功能
+### namenode
+- 实现backupnode定时拉取文件
+## backupnode
+- 实现定时拉取namenode上文件
+- 实现checkpoint定时刷新内存文件目录树到磁盘
