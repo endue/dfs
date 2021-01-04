@@ -15,4 +15,9 @@ public class NameNodeConstant {
 
     public static final String EDITLOG_PATH = "D:\\TF\\editlogs\\";
     public static final String EDITLOG_FILE_PATH = "D:\\TF\\editlogs\\%s-%s.log";
+
+    public static final String CHECKPOINT_FILE_PATH = "D:\\TF\\editlogs\\checkpoint\\";
+
+    public static final String CHECKPOINT_UPLOAD_IP = "127.0.0.1";
+    public static final Integer CHECKPOINT_UPLOAD_PORT = 9000;
 }

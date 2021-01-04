@@ -7,12 +7,14 @@ import com.simon.dfs.backupdanode.fetcher.EditlogFetcher;
 import com.simon.dfs.backupdanode.server.FSDirectory;
 import com.simon.dfs.backupdanode.server.FSNamesystem;
 import com.simon.dfs.common.constants.BackupNodeConstant;
+import com.simon.dfs.common.utils.IOClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 
 /**
  * @Author:
@@ -57,30 +59,30 @@ public class EditlogCheckpoint extends Thread{
         }
     }
 
+    // todo tree内容无更新的话，会做无用操作
     private void doCheckPoint(String tree) throws IOException {
         ByteBuffer buffer = ByteBuffer.wrap(tree.getBytes());
         lastEditlogCheckpoint = BackupNodeConstant.CHECKPOINT_FILE_PATH + editlogFetcher.getFetchedMaxTxid() + BackupNodeConstant.CHECKPOINT_FILE_SUFFIX;
         RandomAccessFile file = null;
         FileOutputStream out = null;
         FileChannel channel = null;
+        FileLock fileLock = null;
 
         try {
             file = new RandomAccessFile(lastEditlogCheckpoint, "rw"); // 读写模式，数据写入缓冲区中
             out = new FileOutputStream(file.getFD());
             channel = out.getChannel();
+            fileLock = channel.lock();
 
             channel.write(buffer);
             channel.force(false); // 强制把数据刷入磁盘上
         } finally {
-            if(out != null) {
-                out.close();
-            }
-            if(file != null) {
-                file.close();
-            }
-            if(channel != null) {
-                channel.close();
-            }
+            fileLock.release();
+            IOClose.close(out,file,channel);
         }
+    }
+
+    public String getLastEditlogCheckpoint() {
+        return lastEditlogCheckpoint;
     }
 }

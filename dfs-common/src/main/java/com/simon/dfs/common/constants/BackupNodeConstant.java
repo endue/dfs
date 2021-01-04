@@ -12,6 +12,8 @@ public class BackupNodeConstant {
 
     public static final long EDITLOG_CHECKPOINT_INTERVAL = TimesConstant.SECOND * 60;
 
+    public static final long CHECKPOINT_UPLOAD_INTERVAL = TimesConstant.SECOND * 60 * 2;
+
     public static final String CHECKPOINT_FILE_PATH = "D:\\TF\\checkpoint\\";
 
     public static final String CHECKPOINT_FILE_SUFFIX = ".meta";
