@@ -13,10 +13,10 @@ import java.util.List;
  */
 public class FSDirectory {
 
-    private NodeDirectory nodeDirectory;
+    private Node nodeDirectory;
 
     public FSDirectory() {
-        nodeDirectory = new NodeDirectory(StrUtil.SLASH);
+        nodeDirectory = new Node(StrUtil.SLASH);
     }
 
     /**
@@ -30,16 +30,16 @@ public class FSDirectory {
             int firstIndex = path.indexOf(StrUtil.SLASH);
             String[] childPath = path.substring(firstIndex + 1).split(StrUtil.SLASH);
 
-            NodeDirectory parent = nodeDirectory;
+            Node parent = nodeDirectory;
 
             for(String children : childPath) {
-                NodeDirectory dir = findDirectory(parent, children);
+                Node dir = findDirectory(parent, children);
                 if(dir != null) {
                     parent = dir;
                     continue;
                 }
 
-                NodeDirectory child = new NodeDirectory(children);
+                Node child = new Node(children);
                 parent.getChildren().add(child);
                 parent = child;
             }
@@ -52,31 +52,31 @@ public class FSDirectory {
      * @param path
      * @return
      */
-    private NodeDirectory findDirectory(NodeDirectory dir, String path) {
+    private Node findDirectory(Node dir, String path) {
         if(dir.getChildren().size() == 0) {
             return null;
         }
         for(Node child : dir.getChildren()) {
-            if(child instanceof NodeDirectory) {
-                NodeDirectory childDir = (NodeDirectory) child;
-                if((childDir.getDirectory().equals(path))) {
-                    return childDir;
-                }
+            if((child.getDirectory().equals(path))) {
+                return child;
             }
         }
         return null;
     }
 
     /**
-     * 目录
+     * 目录或文件
      */
-    public static class NodeDirectory implements Node{
+    public static class Node{
 
         private String directory;
 
         private List<Node> children;
 
-        public NodeDirectory(String directory) {
+        public Node() {
+        }
+
+        public Node(String directory) {
             this.directory = directory;
             this.children = new LinkedList<>();
         }
@@ -97,24 +97,4 @@ public class FSDirectory {
             this.children = children;
         }
     }
-
-    /**
-     * 文件
-     */
-    public static class NodeFile implements Node{
-        private String fileName;
-
-        public String getFileName() {
-            return fileName;
-        }
-
-        public void setFileName(String fileName) {
-            this.fileName = fileName;
-        }
-    }
-
-    /**
-     * 接口
-     */
-    private interface Node{}
 }

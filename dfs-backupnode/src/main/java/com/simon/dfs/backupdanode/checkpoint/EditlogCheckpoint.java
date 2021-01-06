@@ -11,7 +11,10 @@ import com.simon.dfs.common.utils.IOClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
@@ -42,7 +45,7 @@ public class EditlogCheckpoint extends Thread{
                 Thread.sleep(BackupNodeConstant.EDITLOG_CHECKPOINT_INTERVAL);
 
                 logger.info("开始 checkpoint fetchedMaxTxid {}",editlogFetcher.getFetchedMaxTxid());
-                FSDirectory.NodeDirectory nodeDirectory = fsNamesystem.getDirectory().getNodeDirectory();
+                FSDirectory.Node nodeDirectory = fsNamesystem.getDirectory().getNodeDirectory();
                 String tree = JSONUtil.toJsonStr(nodeDirectory);
                 clearLastEditlogCheckpoint();
                 doCheckPoint(tree);
