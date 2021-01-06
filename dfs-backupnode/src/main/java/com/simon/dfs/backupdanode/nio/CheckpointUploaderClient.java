@@ -106,15 +106,17 @@ public class CheckpointUploaderClient extends Thread {
             File checkpointPath = new File(BackupNodeConstant.CHECKPOINT_FILE_PATH);
             File[] files = checkpointPath.listFiles();
             for (File checkpointFile : files) {
+                String checkpointTxid = checkpointFile.getName().replace(BackupNodeConstant.CHECKPOINT_FILE_SUFFIX, "");
+
                 file = new RandomAccessFile(checkpointFile, "rw");
                 channel = file.getChannel();
-
                 Long dataSize = checkpointFile.length();
-                ByteBuffer fileBuffer = ByteBuffer.allocate(dataSize.intValue() + 8);
+                ByteBuffer fileBuffer = ByteBuffer.allocate(8 + 8 + dataSize.intValue());
+                // 读取文件内容
+                fileBuffer.putLong(Long.valueOf(checkpointTxid));
                 fileBuffer.putLong(dataSize);
                 channel.read(fileBuffer);
                 fileBuffer.flip();
-
                 socketChannel.write(fileBuffer);
             }
 

@@ -28,7 +28,7 @@ public class NameNode {
         this.datanodeManager = new DataNodeManager();
         this.rpcServer = new NameNodeRpcServer(this.namesystem,this.datanodeManager);
 
-        this.uploaderServer = new CheckpointUploadServer();
+        this.uploaderServer = new CheckpointUploadServer(this.namesystem);
         this.uploaderServer.start();
     }
 

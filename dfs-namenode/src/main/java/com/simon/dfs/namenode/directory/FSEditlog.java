@@ -127,4 +127,12 @@ public class FSEditlog {
             return doubleBuffer.getEditlogs(fetchedMaxTxid);
         }
     }
+
+    /**
+     * 删除Editlog
+     * @param checkpointTxid
+     */
+    public void deleteEditlog(long checkpointTxid) {
+        doubleBuffer.deleteEditlog(checkpointTxid);
+    }
 }

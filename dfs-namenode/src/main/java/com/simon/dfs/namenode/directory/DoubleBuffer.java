@@ -131,4 +131,20 @@ public class DoubleBuffer {
         }
         return list;
     }
+
+    public void deleteEditlog(long checkpointTxid) {
+        File editlogs = new File(NameNodeConstant.EDITLOG_PATH);
+        if(editlogs.isDirectory() && editlogs.listFiles().length > 0){
+            List<File> fileList = Arrays.stream(editlogs.listFiles()).filter(log -> log.isFile()).collect(toList());
+            Collections.sort(fileList, Comparator.comparing(file -> EditlogUtil.getEditlogMinTxid(file.getPath())));
+            for (File file : fileList) {
+                if(EditlogUtil.getEditlogMaxTxid(file.getPath()) <= checkpointTxid){
+                    logger.info("delete old editlog {}",file.getName());
+                    file.delete();
+                }else{
+                    break;
+                }
+            }
+        }
+    }
 }

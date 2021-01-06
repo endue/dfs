@@ -39,4 +39,12 @@ public class FSNamesystem {
     public List<Editlog> getEditlogs(Long fetchedMaxTxid) {
         return this.editlog.getEditlogs(fetchedMaxTxid);
     }
+
+    /**
+     * 删除Editlog
+     * @param checkpointTxid
+     */
+    public void deleteEditlog(long checkpointTxid) {
+        this.editlog.deleteEditlog(checkpointTxid);
+    }
 }

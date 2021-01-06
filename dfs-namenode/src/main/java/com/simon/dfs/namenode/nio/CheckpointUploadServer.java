@@ -3,6 +3,7 @@ package com.simon.dfs.namenode.nio;
 import com.simon.dfs.common.constants.BackupNodeConstant;
 import com.simon.dfs.common.constants.NameNodeConstant;
 import com.simon.dfs.common.utils.IOClose;
+import com.simon.dfs.namenode.directory.FSNamesystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +24,13 @@ import java.util.Iterator;
  */
 public class CheckpointUploadServer extends Thread {
     private final Logger logger = LoggerFactory.getLogger(CheckpointUploadServer.class);
+    private FSNamesystem namesystem;
     private ServerSocketChannel serverSocketChannel;
     private Selector selector;
 
-    public CheckpointUploadServer() {
+    public CheckpointUploadServer(FSNamesystem namesystem) {
         try {
+            this.namesystem = namesystem;
             serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.configureBlocking(false);
 
@@ -40,6 +43,7 @@ public class CheckpointUploadServer extends Thread {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public void run() {
@@ -127,15 +131,21 @@ public class CheckpointUploadServer extends Thread {
         FileChannel channel = null;
 
         try {
+            ByteBuffer checkpointBuffer = ByteBuffer.allocate(8);
             ByteBuffer lengthBuffer = ByteBuffer.allocate(8);
             socketChannel = (SocketChannel) key.channel();
-            int read = socketChannel.read(lengthBuffer);
+            int read = socketChannel.read(checkpointBuffer);
             if(read == -1){
                 logger.error("client closed");
                 throw new IOException("客户端已关闭");
             }else{
+                checkpointBuffer.flip();
+                long checkpointTxid = checkpointBuffer.getLong();
+
+                socketChannel.read(lengthBuffer);
                 lengthBuffer.flip();
                 Long bufferSize = lengthBuffer.getLong();
+
                 ByteBuffer fileBuffer = ByteBuffer.allocate(bufferSize.intValue());
                 socketChannel.read(fileBuffer);
                 fileBuffer.flip();
@@ -149,12 +159,17 @@ public class CheckpointUploadServer extends Thread {
                 channel.write(fileBuffer);
                 channel.force(false);
                 logger.info("handle readable request, clientAddress {}",socketChannel.getRemoteAddress());
+
+                namesystem.deleteEditlog(checkpointTxid);
             }
 
             socketChannel.register(selector, SelectionKey.OP_WRITE);
         } finally {
             IOClose.close(file,channel);
         }
+    }
+
+    private void deleteEditLog(long checkpointTxid) {
     }
 
 

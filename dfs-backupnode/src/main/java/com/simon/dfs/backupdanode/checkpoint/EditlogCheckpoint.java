@@ -90,7 +90,4 @@ public class EditlogCheckpoint extends Thread{
         }
     }
 
-    public String getLastEditlogCheckpoint() {
-        return lastEditlogCheckpoint;
-    }
 }
