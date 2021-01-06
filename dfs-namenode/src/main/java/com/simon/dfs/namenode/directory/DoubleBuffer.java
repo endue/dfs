@@ -15,6 +15,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * @Author:
  * @Description: editlog双缓存区
@@ -100,7 +102,7 @@ public class DoubleBuffer {
             // 从磁盘文件读
             File editlogs = new File(NameNodeConstant.EDITLOG_PATH);
             if(list.isEmpty() && editlogs.isDirectory() && editlogs.listFiles().length > 0){
-                List<File> fileList = Arrays.asList(editlogs.listFiles());
+                List<File> fileList = Arrays.stream(editlogs.listFiles()).filter(log -> log.isFile()).collect(toList());
                 Collections.sort(fileList, Comparator.comparing(file -> EditlogUtil.getEditlogMinTxid(file.getPath())));
                 for (File file : fileList) {
                     if(EditlogUtil.getEditlogMaxTxid(file.getPath()) <= fetchedMaxTxid){

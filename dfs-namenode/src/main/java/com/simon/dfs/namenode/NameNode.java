@@ -1,5 +1,6 @@
 package com.simon.dfs.namenode;
 
+import com.simon.dfs.namenode.nio.CheckpointUploadServer;
 import com.simon.dfs.namenode.rpc.NameNodeRpcServer;
 import com.simon.dfs.namenode.datanodeinfo.DataNodeManager;
 import com.simon.dfs.namenode.directory.FSNamesystem;
@@ -20,10 +21,15 @@ public class NameNode {
 
     private NameNodeRpcServer rpcServer;
 
+    private CheckpointUploadServer uploaderServer;
+
     private void initialize(){
         this.namesystem = new FSNamesystem();
         this.datanodeManager = new DataNodeManager();
         this.rpcServer = new NameNodeRpcServer(this.namesystem,this.datanodeManager);
+
+        this.uploaderServer = new CheckpointUploadServer();
+        this.uploaderServer.start();
     }
 
     private void start() throws IOException, InterruptedException {

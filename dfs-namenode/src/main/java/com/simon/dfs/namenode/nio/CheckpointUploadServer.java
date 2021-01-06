@@ -3,6 +3,8 @@ package com.simon.dfs.namenode.nio;
 import com.simon.dfs.common.constants.BackupNodeConstant;
 import com.simon.dfs.common.constants.NameNodeConstant;
 import com.simon.dfs.common.utils.IOClose;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,12 +21,12 @@ import java.util.Iterator;
  * @Date: 2021/1/4 23:04
  * @Version: 1.0
  */
-public class CheckpointUploaderServer extends Thread {
-
+public class CheckpointUploadServer extends Thread {
+    private final Logger logger = LoggerFactory.getLogger(CheckpointUploadServer.class);
     private ServerSocketChannel serverSocketChannel;
     private Selector selector;
 
-    public CheckpointUploaderServer() {
+    public CheckpointUploadServer() {
         try {
             serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.configureBlocking(false);
@@ -33,6 +35,7 @@ public class CheckpointUploaderServer extends Thread {
 
             serverSocketChannel.bind(new InetSocketAddress(NameNodeConstant.CHECKPOINT_UPLOAD_IP,NameNodeConstant.CHECKPOINT_UPLOAD_PORT));
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
+            logger.info("CheckpointUploadServer start success");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,7 +80,7 @@ public class CheckpointUploaderServer extends Thread {
                 handleWritableRequest(key);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("uploader server handle error {}",e.getMessage());
         }
     }
 
@@ -90,6 +93,7 @@ public class CheckpointUploaderServer extends Thread {
         serverSocketChannel = (ServerSocketChannel) key.channel();
         SocketChannel socketChannel = serverSocketChannel.accept();
         socketChannel.configureBlocking(false);
+        logger.info("handle acceptable request, clientAddress {}",socketChannel.getRemoteAddress());
         socketChannel.register(selector,SelectionKey.OP_READ);
     }
 
@@ -99,12 +103,15 @@ public class CheckpointUploaderServer extends Thread {
      * @throws IOException
      */
     private void handleWritableRequest(SelectionKey key) throws IOException {
-        ByteBuffer buffer = ByteBuffer.allocate(16);
-        buffer.put("SUCCESS".getBytes());
+        byte[] result = "SUCCESS".getBytes();
+        ByteBuffer buffer = ByteBuffer.allocate(8 + result.length);
+        buffer.putLong(result.length);
+        buffer.put(result);
         buffer.flip();
 
         SocketChannel socketChannel = (SocketChannel) key.channel();
         socketChannel.write(buffer);
+        logger.info("handle writable request, clientAddress {}",socketChannel.getRemoteAddress());
         socketChannel.register(selector, SelectionKey.OP_READ);
     }
 
@@ -117,27 +124,36 @@ public class CheckpointUploaderServer extends Thread {
         String lastEditlogCheckpoint = NameNodeConstant.CHECKPOINT_FILE_PATH + "checkpoint" + BackupNodeConstant.CHECKPOINT_FILE_SUFFIX;
         SocketChannel socketChannel;
         RandomAccessFile file = null;
-        FileOutputStream out = null;
         FileChannel channel = null;
 
         try {
-            ByteBuffer buffer = ByteBuffer.allocate(1024);
+            ByteBuffer lengthBuffer = ByteBuffer.allocate(8);
             socketChannel = (SocketChannel) key.channel();
-            while (socketChannel.read(buffer) > 0)
-            buffer.flip();
-            File checkpointFile = new File(lastEditlogCheckpoint);
-            if(checkpointFile.exists()){
-                checkpointFile.delete();
-            }
-            file = new RandomAccessFile(lastEditlogCheckpoint, "rw");
-            out = new FileOutputStream(file.getFD());
-            channel = out.getChannel();
-            channel.write(buffer);
-            channel.force(false);
+            int read = socketChannel.read(lengthBuffer);
+            if(read == -1){
+                logger.error("client closed");
+                throw new IOException("客户端已关闭");
+            }else{
+                lengthBuffer.flip();
+                Long bufferSize = lengthBuffer.getLong();
+                ByteBuffer fileBuffer = ByteBuffer.allocate(bufferSize.intValue());
+                socketChannel.read(fileBuffer);
+                fileBuffer.flip();
 
-            socketChannel.register(selector, SelectionKey.OP_READ);
+                File checkpointFile = new File(lastEditlogCheckpoint);
+                if(checkpointFile.exists()){
+                    checkpointFile.delete();
+                }
+                file = new RandomAccessFile(lastEditlogCheckpoint, "rw");
+                channel = file.getChannel();
+                channel.write(fileBuffer);
+                channel.force(false);
+                logger.info("handle readable request, clientAddress {}",socketChannel.getRemoteAddress());
+            }
+
+            socketChannel.register(selector, SelectionKey.OP_WRITE);
         } finally {
-            IOClose.close(out,file,channel);
+            IOClose.close(file,channel);
         }
     }
 

@@ -31,7 +31,7 @@ public class BackupNode {
         this.editlogCheckpoint = new EditlogCheckpoint(this,namesystem,editlogFetcher);
         this.editlogCheckpoint.start();
 
-        this.checkpointUploaderClient = new CheckpointUploaderClient(this,editlogCheckpoint);
+        this.checkpointUploaderClient = new CheckpointUploaderClient(this);
         checkpointUploaderClient.start();
 
     }

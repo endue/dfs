@@ -54,8 +54,13 @@ public class EditlogCheckpoint extends Thread{
 
     private void clearLastEditlogCheckpoint() {
         File lastEditlogCheckpointFile;
+        File lastEditlogCheckpointPath;
         if(StrUtil.isNotEmpty(lastEditlogCheckpoint) && (lastEditlogCheckpointFile = new File(lastEditlogCheckpoint)).exists()){
             lastEditlogCheckpointFile.delete();
+        }else if((lastEditlogCheckpointPath = new File(BackupNodeConstant.CHECKPOINT_FILE_PATH)).listFiles().length > 0){
+            for (File file : lastEditlogCheckpointPath.listFiles()) {
+                file.delete();
+            }
         }
     }
 
@@ -69,15 +74,18 @@ public class EditlogCheckpoint extends Thread{
         FileLock fileLock = null;
 
         try {
-            file = new RandomAccessFile(lastEditlogCheckpoint, "rw"); // 读写模式，数据写入缓冲区中
+            file = new RandomAccessFile(lastEditlogCheckpoint, "rw");
             out = new FileOutputStream(file.getFD());
             channel = out.getChannel();
             fileLock = channel.lock();
-
+            // 写channel
             channel.write(buffer);
-            channel.force(false); // 强制把数据刷入磁盘上
+            // 强制把数据刷入磁盘上
+            channel.force(false);
         } finally {
-            fileLock.release();
+            if(fileLock != null){
+                fileLock.release();
+            }
             IOClose.close(out,file,channel);
         }
     }
