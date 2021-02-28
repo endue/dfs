@@ -111,6 +111,12 @@ public class NameNodeServiceImpl extends NameNodeServiceGrpc.NameNodeServiceImpl
         this.running = false;
         // 优雅关闭将内存数据刷入磁盘
         this.namesystem.shutdown();
+
+        ShutdownResponse response = ShutdownResponse.newBuilder()
+                .setStatus(StatusConstant.STATUS_SUCCESS)
+                .build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
     }
 
     /**

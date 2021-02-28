@@ -1,7 +1,16 @@
 package com.simon.dfs.namenode.directory;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.simon.dfs.common.constants.NameNodeConstant;
+import com.simon.dfs.common.utils.IOClose;
 
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,6 +71,45 @@ public class FSDirectory {
             }
         }
         return null;
+    }
+
+    /**
+     * 恢复磁盘上的editlog
+     */
+    public void recoverEditLogs() {
+        File editlogsPath = null;
+        RandomAccessFile randomAccessFile = null;
+        try {
+            editlogsPath  = new File(NameNodeConstant.EDITLOG_PATH);
+            File[] files = editlogsPath.listFiles();
+            if(ArrayUtil.isNotEmpty(files)){
+                List<File> filelist = Arrays.asList(files);
+
+                Collections.sort(filelist, (o1, o2) -> {
+                    String[] split1 = o1.getName().split(StrUtil.DASHED);
+                    Integer n1 = Integer.valueOf(split1[0]);
+                    String[] split2 = o2.getName().split(StrUtil.DASHED);
+                    Integer n2 = Integer.valueOf(split2[0]);
+                    return n1 - n2;
+                });
+                for (File file : filelist) {
+                    randomAccessFile = new RandomAccessFile(file, "rw");
+                    String line = null;
+                    while (StrUtil.isNotEmpty(line = randomAccessFile.readLine())){
+                        Editlog el = JSONUtil.toBean(line, Editlog.class);
+                        this.mkdir(el.getPath());
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            IOClose.close(randomAccessFile);
+        }
+    }
+
+    public void resetNodeDirectory(Node node) {
+        this.nodeDirectory = node;
     }
 
     /**

@@ -103,14 +103,15 @@ public class FSEditlog {
             // 修改最大刷磁盘ID
             flushedMaxTxid = doubleBuffer.getFlushMaxTxid();
             // 交换两块缓冲区
-            doubleBuffer.setReadyToFlush();
+            readyToFlush();
+
             needFlush = false;
             notifyAll();
             // 修改正在刷磁盘标识符
             flushing = true;
         }
 
-        this.flush();
+        flush();
 
         synchronized(this) {
             flushing = false;
@@ -118,8 +119,15 @@ public class FSEditlog {
         }
     }
 
+    public void readyToFlush(){
+        doubleBuffer.setReadyToFlush();
+    }
+    /**
+     * flush内存数据
+     * 注意flush前一定要执行readyToFlush
+     */
     public void flush() {
-        this.doubleBuffer.flush();
+        doubleBuffer.flush();
     }
 
     public List<Editlog> getEditlogs(Long fetchedMaxTxid) {

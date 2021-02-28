@@ -31,6 +31,10 @@ public class BackupNode {
         // 创建log定时upload任务
         this.checkpointUploaderClient = new CheckpointUploaderClient(this);
 
+        loadMaxTxid();
+    }
+
+    private void loadMaxTxid() {
         // 读取log已checkpoint的maxtxid，进行恢复
         long checkpointMaxTxid = this.editlogCheckpoint.recoverCheckpointMaxTxid();
         this.editlogFetcher.setFetchedMaxTxid(checkpointMaxTxid);

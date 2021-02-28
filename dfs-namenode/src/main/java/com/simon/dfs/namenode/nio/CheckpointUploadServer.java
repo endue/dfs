@@ -1,14 +1,15 @@
 package com.simon.dfs.namenode.nio;
 
+import cn.hutool.json.JSONUtil;
 import com.simon.dfs.common.constants.BackupNodeConstant;
 import com.simon.dfs.common.constants.NameNodeConstant;
 import com.simon.dfs.common.utils.IOClose;
+import com.simon.dfs.namenode.directory.FSDirectory;
 import com.simon.dfs.namenode.directory.FSNamesystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
@@ -125,7 +126,8 @@ public class CheckpointUploadServer extends Thread {
      * @throws IOException
      */
     private void handleReadableRequest(SelectionKey key) throws IOException {
-        String lastEditlogCheckpoint = NameNodeConstant.CHECKPOINT_FILE_PATH + "checkpoint" + BackupNodeConstant.CHECKPOINT_FILE_SUFFIX;
+        logger.info("CheckpointUploadServer handle");
+        File checkpointFile = new File(NameNodeConstant.CHECKPOINT_FILE_PATH, "checkpoint" + BackupNodeConstant.CHECKPOINT_FILE_SUFFIX);
         SocketChannel socketChannel;
         RandomAccessFile file = null;
         FileChannel channel = null;
@@ -150,12 +152,14 @@ public class CheckpointUploadServer extends Thread {
                 socketChannel.read(fileBuffer);
                 fileBuffer.flip();
 
-                File checkpointFile = new File(lastEditlogCheckpoint);
                 if(checkpointFile.exists()){
                     checkpointFile.delete();
                 }
+                if(!checkpointFile.getParentFile().exists()){
+                    checkpointFile.getParentFile().mkdirs();
+                }
 
-                file = new RandomAccessFile(lastEditlogCheckpoint, "rw");
+                file = new RandomAccessFile(checkpointFile, "rw");
                 channel = file.getChannel();
                 channel.write(fileBuffer);
                 channel.force(false);
@@ -170,8 +174,31 @@ public class CheckpointUploadServer extends Thread {
         }
     }
 
-    private void deleteEditLog(long checkpointTxid) {
+    /**
+     * 恢复磁盘上册checkpoint文件
+     */
+    public void recoverCheckpointEditLogs() {
+        logger.info("recoverCheckpointEditLogs start");
+        File checkpointEditLogFile = null;
+        RandomAccessFile accessFile = null;
+        try {
+            checkpointEditLogFile = new File(NameNodeConstant.CHECKPOINT_FILE_PATH, "checkpoint" + BackupNodeConstant.CHECKPOINT_FILE_SUFFIX);
+            if(checkpointEditLogFile.exists()){
+                accessFile = new RandomAccessFile(checkpointEditLogFile, "rw");
+                byte[] buff=new byte[1024];
+                int length = -1;
+                String x = "";
+                while((length = accessFile.read(buff)) != -1){
+                    x += new String(buff,0, length);
+                }
+                FSDirectory.Node node = JSONUtil.toBean(x, FSDirectory.Node.class);
+                namesystem.resetNodeDirectory(node);
+            }
+        }catch (Exception e){
+            logger.error("recoverCheckpointEditLogs error", e);
+        }finally {
+            IOClose.close(accessFile);
+        }
     }
-
 
 }

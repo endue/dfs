@@ -21,7 +21,14 @@ public class FileSystemTest {
     }
     @Test
     public void mkdir(){
-		try {
+		for(int j = 0; j < 200; j++) {
+			try {
+				fileSystem.mkdir("/usr/warehouse/hive" + j + "_" + Thread.currentThread().getName());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		/*try {
 			CountDownLatch countDownLatch = new CountDownLatch(5);
 			for(int i = 0; i < 5;i++){
 				new Thread(() -> {
@@ -39,7 +46,7 @@ public class FileSystemTest {
 			countDownLatch.await();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 	}
 
     @Test

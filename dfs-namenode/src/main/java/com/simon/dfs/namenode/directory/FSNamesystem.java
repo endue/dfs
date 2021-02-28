@@ -32,7 +32,11 @@ public class FSNamesystem {
         return true;
     }
 
+    /**
+     * 关闭当前服务
+     */
     public void shutdown() {
+        this.editlog.readyToFlush();
         this.editlog.flush();
     }
 
@@ -46,5 +50,16 @@ public class FSNamesystem {
      */
     public void deleteEditlog(long checkpointTxid) {
         this.editlog.deleteEditlog(checkpointTxid);
+    }
+
+    /**
+     * 恢复磁盘上的editlogs文件
+     */
+    public void recoverEditLogs() {
+        this.directory.recoverEditLogs();
+    }
+
+    public void resetNodeDirectory(FSDirectory.Node node) {
+        this.directory.resetNodeDirectory(node);
     }
 }

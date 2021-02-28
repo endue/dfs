@@ -29,10 +29,14 @@ public class NameNode {
         this.rpcServer = new NameNodeRpcServer(this.namesystem,this.datanodeManager);
 
         this.uploaderServer = new CheckpointUploadServer(this.namesystem);
-        this.uploaderServer.start();
+        // 恢复checkpoint文件中的editlogs
+        this.uploaderServer.recoverCheckpointEditLogs();
+        // 恢复磁盘editlog文件中的数据
+        this.namesystem.recoverEditLogs();
     }
 
     private void start() throws IOException, InterruptedException {
+        this.uploaderServer.start();
         this.rpcServer.start();
         this.rpcServer.blockUntilShutdown();
     }

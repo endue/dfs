@@ -27,3 +27,5 @@
 ## 实现功能
 ### datanode
 - 实现datanode启动时基于checkpoint文件名恢复已经checkpoint的maxTxid,不需要每次fetch的时候都从0开始避免了重启时EditlogFetcher.fetchedMaxTxid为0的问题
+- 解决namenode收到backupnode上报checkpoint文件时，创建文件路径不存在的问题
+![架构图](img/2021-01-01/img.jpg)
