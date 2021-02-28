@@ -9,12 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author:
- * @Description:
+ * @Description: 负责dataNode节点管理
  * @Date: 2020/12/29 7:15
  * @Version: 1.0
  */
 public class DataNodeManager {
-
+    // 保存datanode节点信息
     private Map<String, DataNodeInfo> datanodes = new ConcurrentHashMap<>();
 
     public DataNodeManager() {

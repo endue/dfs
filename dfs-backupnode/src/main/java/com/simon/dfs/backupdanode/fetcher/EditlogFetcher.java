@@ -22,13 +22,17 @@ public class EditlogFetcher extends Thread {
     private BackupNode backupNode;
     private FSNamesystem fsNamesystem;
     private NameNodeRpcClient rpcClient;
-    private long fetchedMaxTxid = 0L;
-
+    // 已从namenode拉取的最大的txid
+    private long fetchedMaxTxid;
 
     public EditlogFetcher(BackupNode backupNode, FSNamesystem namesystem) {
         this.backupNode = backupNode;
         this.fsNamesystem = namesystem;
         this.rpcClient = new NameNodeRpcClient();
+    }
+
+    public void setFetchedMaxTxid(long fetchedMaxTxid) {
+        this.fetchedMaxTxid = fetchedMaxTxid;
     }
 
     @Override

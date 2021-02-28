@@ -154,6 +154,7 @@ public class CheckpointUploadServer extends Thread {
                 if(checkpointFile.exists()){
                     checkpointFile.delete();
                 }
+
                 file = new RandomAccessFile(lastEditlogCheckpoint, "rw");
                 channel = file.getChannel();
                 channel.write(fileBuffer);

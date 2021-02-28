@@ -24,19 +24,26 @@ public class BackupNode {
     private void initialize(){
         this.running = true;
         this.namesystem = new FSNamesystem();
-
+        // 创建log定时fetch任务
         this.editlogFetcher = new EditlogFetcher(this,namesystem);
-        this.editlogFetcher.start();
-
+        // 创建log定时checkpoint任务
         this.editlogCheckpoint = new EditlogCheckpoint(this,namesystem,editlogFetcher);
-        this.editlogCheckpoint.start();
-
+        // 创建log定时upload任务
         this.checkpointUploaderClient = new CheckpointUploaderClient(this);
-        checkpointUploaderClient.start();
 
+        // 读取log已checkpoint的maxtxid，进行恢复
+        long checkpointMaxTxid = this.editlogCheckpoint.recoverCheckpointMaxTxid();
+        this.editlogFetcher.setFetchedMaxTxid(checkpointMaxTxid);
     }
 
     private void start() {
+        // 启动log定时fetch任务
+        this.editlogFetcher.start();
+        // 启动log定时checkpoint任务
+        this.editlogCheckpoint.start();
+        // 启动log定时upload任务
+        checkpointUploaderClient.start();
+
         while (running){
             try {
                 Thread.sleep(1000);

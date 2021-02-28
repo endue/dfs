@@ -1,5 +1,6 @@
 package com.simon.dfs.backupdanode.checkpoint;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.simon.dfs.backupdanode.BackupNode;
@@ -7,17 +8,16 @@ import com.simon.dfs.backupdanode.fetcher.EditlogFetcher;
 import com.simon.dfs.backupdanode.server.FSDirectory;
 import com.simon.dfs.backupdanode.server.FSNamesystem;
 import com.simon.dfs.common.constants.BackupNodeConstant;
+import com.simon.dfs.common.utils.FileUtil;
 import com.simon.dfs.common.utils.IOClose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.util.List;
 
 /**
  * @Author:
@@ -30,6 +30,7 @@ public class EditlogCheckpoint extends Thread{
     private BackupNode backupNode;
     private FSNamesystem fsNamesystem;
     private EditlogFetcher editlogFetcher;
+    // 上一次checkpoint到磁盘的文件绝对路径+名称
     private String lastEditlogCheckpoint;
 
     public EditlogCheckpoint(BackupNode backupNode, FSNamesystem namesystem, EditlogFetcher editlogFetcher) {
@@ -93,4 +94,29 @@ public class EditlogCheckpoint extends Thread{
         }
     }
 
+    /**
+     * 恢复checkpoint文件中最大的txid
+     * @return
+     */
+    public long recoverCheckpointMaxTxid() {
+        long checkpointMaxTxid = 0L;
+        try {
+            File checkpointFile = new File(BackupNodeConstant.CHECKPOINT_FILE_PATH);
+            if(checkpointFile.exists()){
+                File[] files = checkpointFile.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith(BackupNodeConstant.CHECKPOINT_FILE_SUFFIX);
+                    }
+                });
+                if(files != null && files.length > 0){
+                    List<File> fileList = FileUtil.sortDataDir(files, BackupNodeConstant.CHECKPOINT_FILE_PATH, true);
+                    return FileUtil.getTxidFromName(fileList.get(0).getName(),BackupNodeConstant.CHECKPOINT_FILE_SUFFIX.replace(StrUtil.DOT,"") );
+                }
+            }
+        }catch (Exception e){
+            logger.error("recoverCheckpointMaxTxid error");
+        }
+        return checkpointMaxTxid;
+    }
 }

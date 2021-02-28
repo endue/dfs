@@ -109,6 +109,7 @@ public class NameNodeServiceImpl extends NameNodeServiceGrpc.NameNodeServiceImpl
     public void shutdown(ShutdownRequest request, StreamObserver<ShutdownResponse> responseObserver) {
         logger.info("shutdown");
         this.running = false;
+        // 优雅关闭将内存数据刷入磁盘
         this.namesystem.shutdown();
     }
 

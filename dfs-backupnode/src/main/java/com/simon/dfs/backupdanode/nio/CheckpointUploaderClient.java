@@ -118,10 +118,10 @@ public class CheckpointUploaderClient extends Thread {
                 channel.read(fileBuffer);
                 fileBuffer.flip();
                 socketChannel.write(fileBuffer);
-            }
 
-            socketChannel.register(selector,SelectionKey.OP_READ);
-            logger.info("client checkpoint upload finish");
+                socketChannel.register(selector,SelectionKey.OP_READ);
+                logger.info("client checkpoint upload finish");
+            }
         } finally {
             IOClose.close(file,channel);
         }
