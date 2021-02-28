@@ -22,3 +22,8 @@
 ## backupnode
 - 实现定时拉取namenode上文件
 - 实现checkpoint定时刷新内存文件目录树到磁盘
+
+# 2021-2-28
+## 实现功能
+### datanode
+- 实现datanode启动时基于checkpoint文件名恢复已经checkpoint的maxTxid,不需要每次fetch的时候都从0开始避免了重启时EditlogFetcher.fetchedMaxTxid为0的问题
